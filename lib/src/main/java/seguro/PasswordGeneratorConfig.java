@@ -1,8 +1,9 @@
 package seguro;
 
-import org.lombok.Getters;
+import lombok.Getter;
 
-@Getters
+
+@Getter
 public class PasswordGeneratorConfig {
     
     private Boolean lowerCase;
@@ -10,8 +11,18 @@ public class PasswordGeneratorConfig {
     private Boolean symbols;
     private Boolean numbers;
 
+    private PasswordGeneratorConfig() {}
+
     public static PasswordGeneratorConfig builder() {
-        return PasswordGeneratorConfig();
+        return new PasswordGeneratorConfig();
+    }
+
+    public static PasswordGeneratorConfig all() {
+        return PasswordGeneratorConfig.builder()
+        .allowLowerCase()
+        .allowUpperCase()
+        .allowNumbers()
+        .allowSymbols();
     }
 
     public PasswordGeneratorConfig allowLowerCase() {
@@ -33,6 +44,5 @@ public class PasswordGeneratorConfig {
         symbols = true;
         return this;
     }
-
 
 }
