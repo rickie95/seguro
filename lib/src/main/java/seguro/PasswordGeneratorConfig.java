@@ -1,47 +1,23 @@
 package seguro;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import lombok.Getter;
+import seguro.policies.GeneratorPolicy;
 
 
 @Getter
 public class PasswordGeneratorConfig {
-    
-    private Boolean lowerCase;
-    private Boolean upperCase;
-    private Boolean symbols;
-    private Boolean numbers;
 
-    private PasswordGeneratorConfig() {}
+    private List<GeneratorPolicy> policyList;
 
-    public static PasswordGeneratorConfig builder() {
-        return new PasswordGeneratorConfig();
+    public PasswordGeneratorConfig() {
+        policyList = new ArrayList<>();
     }
 
-    public static PasswordGeneratorConfig all() {
-        return PasswordGeneratorConfig.builder()
-        .allowLowerCase()
-        .allowUpperCase()
-        .allowNumbers()
-        .allowSymbols();
-    }
-
-    public PasswordGeneratorConfig allowLowerCase() {
-        lowerCase = true;
-        return this;
-    }
-
-    public PasswordGeneratorConfig allowUpperCase() {
-        upperCase = true;
-        return this;
-    }
-
-    public PasswordGeneratorConfig allowNumbers() {
-        numbers = true;
-        return this;
-    }
-
-    public PasswordGeneratorConfig allowSymbols() {
-        symbols = true;
+    public PasswordGeneratorConfig withPolicy(GeneratorPolicy policy) {
+        policyList.add(policy);
         return this;
     }
 

@@ -1,6 +1,9 @@
 package seguro;
 
 import org.apache.commons.lang3.RandomStringUtils;
+
+import seguro.policies.GeneratorPolicy;
+
 import org.apache.commons.lang3.ArrayUtils;
 import java.security.SecureRandom;
 import java.util.Collections;
@@ -11,45 +14,23 @@ import java.util.stream.IntStream;
 
 public class PasswordGenerator {
 
-    private final static char[] lowercase = "abcdefghijklmnopqrstuvwxyz".toCharArray();
-    private final static char[] uppercase = "ABCDEFGJKLMNPRSTUVWXYZ".toCharArray();
-    private final static char[] numbers = "0123456789".toCharArray();
-    private final static char[] symbols = "$?!@#%&".toCharArray();
-
     private PasswordGeneratorConfig generatorConfiguration;
     private char[] charSet;
     private Random random;
-
-    /**
-     * Create an instance with all security policies enabled
-     */
-    public PasswordGenerator() {
-        this(PasswordGeneratorConfig.all());
-    }
 
     public PasswordGenerator(PasswordGeneratorConfig configuration) {
         random = new SecureRandom();
         this.generatorConfiguration = configuration;
 
-        if (generatorConfiguration.getLowerCase()) {
-            charSet = ArrayUtils.addAll(charSet, lowercase);
+        for (GeneratorPolicy p : configuration.getPolicyList()) {
+            charSet = ArrayUtils.addAll(charSet, p.getCharSet());
         }
 
-        if (generatorConfiguration.getUpperCase()) {
-            charSet = ArrayUtils.addAll(charSet, uppercase);
-        }
-
-        if (generatorConfiguration.getNumbers()) {
-            charSet = ArrayUtils.addAll(charSet, numbers);
-        }
-
-        if (generatorConfiguration.getSymbols()) {
-            charSet = ArrayUtils.addAll(charSet, symbols);
-        }
     }
 
     public String generate(int length) {
         assert length > 0 : "Password length must be > 0";
+        assert charSet != null : "Char set not available, add at least one policy in your configuration.";
         assert charSet.length > 0 : "Char set must be non empty. Did you provide a valid configuration?";
 
         // Generate a random string
@@ -62,20 +43,8 @@ public class PasswordGenerator {
 
         StringBuilder builder = new StringBuilder();
 
-        if (generatorConfiguration.getLowerCase()) {
-            builder.append(lowercase[random.nextInt(lowercase.length)]);
-        }
-
-        if (generatorConfiguration.getUpperCase()) {
-            builder.append(uppercase[random.nextInt(uppercase.length)]);
-        }
-
-        if (generatorConfiguration.getNumbers()) {
-            builder.append(numbers[random.nextInt(numbers.length)]);
-        }
-
-        if (generatorConfiguration.getSymbols()) {
-            builder.append(symbols[random.nextInt(symbols.length)]);
+        for (GeneratorPolicy p : generatorConfiguration.getPolicyList()){
+            builder.append(p.getRandomChar());
         }
 
         // choice builder.length numbers from password.length
